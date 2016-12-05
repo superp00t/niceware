@@ -1,0 +1,90 @@
+package niceware
+
+import (
+	"crypto/rand"
+	"fmt"
+	"strings"
+
+	"github.com/superp00t/niceware/words"
+)
+
+func BytesToPassphrase(input []byte) ([]string, error) {
+	if len(input)%2 == 1 {
+		return nil, fmt.Errorf("Only even-sized byte arrays are supported.")
+	}
+
+	var sentence []string
+
+	for index, char := range input {
+		if index+1 == len(input) {
+			break
+		}
+
+		next := input[index+1]
+
+		if index%2 == 0 {
+			wordIndex := int(char)*256 + int(next)
+			if words.WordList[wordIndex] == "" {
+				return nil, fmt.Errorf("Could not convert byte 0x%x to word", wordIndex)
+			} else {
+				sentence = append(sentence, words.WordList[wordIndex])
+			}
+		}
+	}
+
+	return sentence, nil
+}
+
+func PassphraseToBytes(input []string) ([]byte, error) {
+	decoded := make([]byte, len(input)*2)
+
+	for index, word := range input {
+		word = strings.ToLower(word)
+
+		wordIndex := -1
+		for i, wd := range words.WordList {
+			if wd == word {
+				wordIndex = i
+				break
+			}
+		}
+
+		if wordIndex == -1 {
+			return nil, fmt.Errorf("Invalid word: %s", word)
+		}
+
+		decoded[2*index] = byte(wordIndex / 256)
+		decoded[2*index+1] = byte(wordIndex % 256)
+	}
+
+	return decoded, nil
+}
+
+func RandomPassphrase(size int) ([]string, error) {
+	if size < 0 || size > 1024 {
+		return nil, fmt.Errorf("Size must be between 0 and 1024 bytes.")
+	}
+	rando := make([]byte, size)
+	rand.Read(rando)
+	return BytesToPassphrase(rando)
+}
+
+func BytesToString(input []byte) (string, error) {
+	strslice, err := BytesToPassphrase(input)
+	if err != nil {
+		return "", err
+	}
+
+	output := strslice[0]
+
+	for _, w := range strslice[1:] {
+		output = output + " " + w
+	}
+
+	return output, nil
+}
+
+func StringToBytes(input string) ([]byte, error) {
+	words := strings.Split(input, " ")
+	return PassphraseToBytes(words)
+}

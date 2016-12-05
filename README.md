@@ -4,7 +4,7 @@ This is a port of [niceware](https://github.com/diracdeltas/niceware) from Node.
 
 ## Example Usage
 
-```
+``` go
 package main
 
 import (

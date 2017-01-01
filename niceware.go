@@ -60,13 +60,14 @@ func PassphraseToBytes(input []string) ([]byte, error) {
 	return decoded, nil
 }
 
-func RandomPassphrase(size int) ([]string, error) {
-	if size < 0 || size > 1024 {
-		return nil, fmt.Errorf("Size must be between 0 and 1024 bytes.")
-	}
+func RandomBytes(size int) []byte {
 	rando := make([]byte, size)
 	rand.Read(rando)
-	return BytesToPassphrase(rando)
+	return rando
+}
+
+func RandomPassphrase(size int) ([]string, error) {
+	return BytesToPassphrase(RandomBytes(size))
 }
 
 func BytesToString(input []byte) (string, error) {
@@ -87,4 +88,8 @@ func BytesToString(input []byte) (string, error) {
 func StringToBytes(input string) ([]byte, error) {
 	words := strings.Split(input, " ")
 	return PassphraseToBytes(words)
+}
+
+func RandomString() (string, error) {
+	return BytesToString(RandomBytes(12))
 }

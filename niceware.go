@@ -60,14 +60,14 @@ func PassphraseToBytes(input []string) ([]byte, error) {
 	return decoded, nil
 }
 
-func RandomBytes(size int) []byte {
+func randomBytes(size int) []byte {
 	rando := make([]byte, size)
 	rand.Read(rando)
 	return rando
 }
 
 func RandomPassphrase(size int) ([]string, error) {
-	return BytesToPassphrase(RandomBytes(size))
+	return BytesToPassphrase(randomBytes(size))
 }
 
 func BytesToString(input []byte) (string, error) {
@@ -91,5 +91,5 @@ func StringToBytes(input string) ([]byte, error) {
 }
 
 func RandomString() (string, error) {
-	return BytesToString(RandomBytes(12))
+	return BytesToString(randomBytes(12))
 }

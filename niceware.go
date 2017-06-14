@@ -76,13 +76,7 @@ func BytesToString(input []byte) (string, error) {
 		return "", err
 	}
 
-	output := strslice[0]
-
-	for _, w := range strslice[1:] {
-		output = output + " " + w
-	}
-
-	return output, nil
+	return strings.Join(strslice, " "), nil
 }
 
 func StringToBytes(input string) ([]byte, error) {
